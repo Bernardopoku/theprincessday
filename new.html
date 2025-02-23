@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ultimate Tribute - Scarlet</title>
+  <style>
+    /*-----------------------------------------
+      RESET & BASIC VARIABLES
+    -----------------------------------------*/
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background: #000;
+      overflow: hidden;
+    }
+    :root {
+      --pink-border: #ff9ec7;
+      --primary: #ff6f91;
+      --secondary: #ffc3a0;
+      --accent: #ff9671;
+      --text-color: #fff;
+    }
+    
+    /*-----------------------------------------
+      ANIMATED GRADIENT BACKGROUND
+    -----------------------------------------*/
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      z-index: -3;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    /*-----------------------------------------
+      FLOATING BALLOONS
+    -----------------------------------------*/
+    .balloon {
+      position: fixed;
+      bottom: -100px;
+      width: 40px;
+      height: 60px;
+      background: radial-gradient(circle, #ff7eb3, #ff3b8d);
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: floatBalloon 5s linear infinite;
+      z-index: -2;
+    }
+    @keyframes floatBalloon {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { transform: translateY(-50vh) scale(1.05); }
+      100% { transform: translateY(-100vh) scale(1.1); opacity: 0; }
+    }
+    
+    /*-----------------------------------------
+      FLOWER-LIKE PARTICLES
+    -----------------------------------------*/
+    .flower {
+      position: fixed;
+      top: -20px;
+      width: 24px;
+      height: 24px;
+      background: url("flower.png") no-repeat center/contain;
+      animation: flowerFloat linear infinite;
+      z-index: -2;
+      opacity: 0.9;
+    }
+    @keyframes flowerFloat {
+      0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+    
+    /*-----------------------------------------
+      TOP NAVIGATION
+    -----------------------------------------*/
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      padding: 10px;
+    }
+    nav li {
+      color: var(--text-color);
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s, transform 0.3s;
+    }
+    nav li:hover,
+    nav li.active {
+      background: var(--primary);
+      transform: scale(1.05);
+    }
+    
+    /*-----------------------------------------
+      TAB SECTIONS
+    -----------------------------------------*/
+    .tab-section {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      padding-top: 60px; /* space for nav */
+    }
+    .tab-section.active {
+      display: block;
+      animation: fadeIn 0.8s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } 
+      to { opacity: 1; }
+    }
+    
+    /*-----------------------------------------
+      PINK-BORDERED CONTAINER (HOME TAB)
+    -----------------------------------------*/
+    .main-container {
+      width: 80%;
+      max-width: 300px;
+      margin: 0 auto;
+      margin-top: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid var(--pink-border);
+      border-radius: 20px;
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+      animation: containerFloat 3s ease-in-out infinite;
+    }
+    @keyframes containerFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .main-container::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: inherit;
+      border: 2px solid var(--pink-border);
+      opacity: 0.7;
+      filter: blur(6px);
+      animation: neonGlow 3s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes neonGlow {
+      0% { box-shadow: 0 0 10px var(--pink-border); }
+      100% { box-shadow: 0 0 20px var(--pink-border); }
+    }
+    
+    /*-----------------------------------------
+      SLIDESHOW INSIDE CONTAINER
+    -----------------------------------------*/
+    .slideshow {
+      position: relative;
+      width: 100%;
+      height: 50vh;
+      overflow: hidden;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      margin-bottom: 15px;
+    }
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      text-align: center;
+      color: var(--text-color);
+    }
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+    .slide img {
+      max-width: 100%;
+      max-height: 60%;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      margin-bottom: 10px;
+    }
+    .slide .quote {
+      font-size: 1rem;
+      line-height: 1.4;
+      padding: 0 10px;
+    }
+    
+    /*-----------------------------------------
+      CELEBRATE BUTTON (Festive Text)
+    -----------------------------------------*/
+    .celebrate-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+      margin-top: 10px;
+      animation: buttonPulse 2.5s infinite alternate;
+    }
+    .celebrate-btn:hover {
+      transform: scale(1.1);
+    }
+    @keyframes buttonPulse {
+      0% { box-shadow: 0 0 10px var(--primary); }
+      100% { box-shadow: 0 0 20px var(--primary); }
+    }
+    
+    /*-----------------------------------------
+      COUNTDOWN TAB
+    -----------------------------------------*/
+    .countdown-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(100% - 60px);
+      color: var(--text-color);
+    }
+    .countdown-content {
+      text-align: center;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    .countdown-content h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px var(--accent);
+    }
+    .countdown-timer {
+      font-size: 1.4rem;
+      background: rgba(0,0,0,0.3);
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 10px;
+      box-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <nav>
+    <ul>
+      <li class="active" data-tab="home">Home</li>
+      <li data-tab="countdownTab">Countdown </li>
+    </ul>
+  </nav>
+  
+  <!-- HOME TAB -->
+  <div id="home" class="tab-section active">
+    <div class="main-container">
+      <!-- SLIDESHOW: Displays your images with quotes below them -->
+      <div class="slideshow" id="slideshow">
+        <!-- Slides will be injected via JavaScript -->
+      </div>
+      <!-- Extra text -->
+      <div class="extra-text">You Are Extraordinary</div>
+      <!-- Celebrate Button -->
+      <button class="celebrate-btn" onclick="playMusic()">Unleash the Magic</button>
+    </div>
+  </div>
+  
+  <!-- COUNTDOWN TAB -->
+  <div id="countdownTab" class="tab-section">
+    <div class="countdown-container">
+      <div class="countdown-content">
+        <h2>Countdown to Scarlet's Special Day</h2>
+        <div class="countdown-timer" id="countdown">Loading...</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- HIDDEN AUDIO (Replace "ScarletDay.mp3" with your music file) -->
+  <audio id="audio" src="ScarletDay.mp3" preload="auto"></audio>
+  
+  <script>
+    /**************************************************
+     * NAVIGATION TABS
+     **************************************************/
+    const navItems = document.querySelectorAll('nav li');
+    const tabSections = document.querySelectorAll('.tab-section');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        navItems.forEach(i => i.classList.remove('active'));
+        tabSections.forEach(sec => sec.classList.remove('active'));
+        item.classList.add('active');
+        document.getElementById(item.dataset.tab).classList.add('active');
+      });
+    });
+    
+    /**************************************************
+     * FLOWER-LIKE PARTICLES (Tiny Flowers)
+     **************************************************/
+    function createFlowers() {
+      const flowerCount = 40;
+      for (let i = 0; i < flowerCount; i++) {
+        const flower = document.createElement('div');
+        flower.classList.add('flower');
+        flower.style.left = Math.random() * 100 + '%';
+        flower.style.animationDuration = (3 + Math.random() * 3) + 's';
+        flower.style.animationDelay = Math.random() * 3 + 's';
+        document.body.appendChild(flower);
+      }
+    }
+    createFlowers();
+    
+    /**************************************************
+     * SLIDESHOW CONTENT (Images & Quotes)
+     * We'll alternate between the two images for each quote.
+     **************************************************/
+    const quotes = [
+      "Your smile lights up every room.",
+      "May your birthday be as beautiful as you are.",
+      "Your laughter is the melody of joy.",
+      "Every moment with you is a cherished memory.",
+      "You bring sunshine into my life.",
+      "Your kindness inspires everyone around you.",
+      "May every wish you make come true.",
+      "Your heart is a beacon of love and light.",
+      "You are a true blessing in our lives.",
+      "Every day with you feels like a celebration.",
+      "Your beauty radiates from within.",
+      "I treasure every moment we share.",
+      "Your spirit shines bright, lighting our way.",
+      "You fill our lives with endless love.",
+      "Your joy is contagious and uplifting.",
+      "Every smile of yours brings happiness.",
+      "You make the world a better place just by being in it.",
+      "Your presence is a constant source of warmth.",
+      "May your special day be filled with magic.",
+      "You deserve all the love in the world.",
+      "Your grace and beauty inspire us every day.",
+      "Each moment with you is a priceless gift.",
+      "You are the light that brightens our lives.",
+      "Your passion and spirit are awe-inspiring.",
+      "May your heart always overflow with joy.",
+      "Your energy brings life to every day.",
+      "I admire the wonderful person you are.",
+      "Every day is brighter with you in it.",
+      "Your warmth touches everyone around you.",
+      "You are a shining star, lighting up our world.",
+      "Happy Birthday, Scarlet – you are one of a kind!"
+    ];
+    
+    // Build slides by alternating the two images
+    const slidesData = quotes.map((quote, index) => {
+      return {
+        src: index % 2 === 0 ? "pic1.jpg" : "pic2.jpg",
+        quote: quote
+      };
+    });
+    
+    const slideshowEl = document.getElementById('slideshow');
+    slidesData.forEach((item, index) => {
+      const slideDiv = document.createElement('div');
+      slideDiv.classList.add('slide');
+      if (index === 0) slideDiv.classList.add('active');
+      
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = "Scarlet's Picture";
+      slideDiv.appendChild(img);
+      
+      const quoteDiv = document.createElement('div');
+      quoteDiv.classList.add('quote');
+      quoteDiv.textContent = item.quote;
+      slideDiv.appendChild(quoteDiv);
+      
+      slideshowEl.appendChild(slideDiv);
+    });
+    
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 5000);
+    
+    /**************************************************
+     * COUNTDOWN TIMER (NZ Time for Feb 24, 2025)
+     **************************************************/
+    const countdownEl = document.getElementById('countdown');
+    const targetDate = new Date('Feb 24, 2025 00:00:00 GMT+1200').getTime();
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+      if (diff < 0) {
+        countdownEl.textContent = "It's your special day, Scarlet!";
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+    
+    /**************************************************
+     * MUSIC PLAY FUNCTION
+     **************************************************/
+    const audioEl = document.getElementById('audio');
+    function playMusic() {
+      audioEl.play().catch(err => {
+        console.error("Music play error:", err);
+      });
+    }
+    window.playMusic = playMusic;
+    
+    /**************************************************
+     * CREATE BALLOONS
+     **************************************************/
+    function createBalloons() {
+      const balloonCount = 10;
+      for (let i = 0; i < balloonCount; i++) {
+        const balloon = document.createElement('div');
+        balloon.classList.add('balloon');
+        balloon.style.left = Math.random() * 100 + '%';
+        balloon.style.animationDuration = (4 + Math.random() * 2) + 's';
+        balloon.style.animationDelay = Math.random() * 3 + 's';
+        document.body.appendChild(balloon);
+      }
+    }
+    createBalloons();
+  </script>
+</body>
+</html>
